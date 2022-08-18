@@ -26,7 +26,9 @@ class IDE:
         myCanvas.pack(fill="both", expand=True)
 
         # Key command
-        self.ideWindow.bind('<F5>', lambda e: self.compileCode())
+        self.ideWindow.bind('<F5>', lambda e: self.compile())
+
+        self.row = 0
 
     def topBar(self):
 
@@ -50,25 +52,46 @@ class IDE:
 
         # Entry box for the code
         self.entryBox = Text(self.ideWindow,
-                              font=("Helvetica", 14),
-                              bg="#eeeeee", bd=1,
-                              fg="#383e42", highlightthickness=1,
-                              insertbackground='white')
+                              font=("Fixedsys", 16),
+                              bg="#eeeeee",
+                              fg="#383e42", highlightthickness=1)
 
-        self.entryBox.place(x=10, y=10, width=780, height=300)
+        self.entryBox.place(x=30, y=10, width=750, height=300)
 
+        # first approach of the side bar for numeration
+        self.lineNum = Text(self.ideWindow, bg="#444444", font=("Fixedsys", 16), fg="#eeeeee")
+        self.lineNum.place(x=5, y=10,width=20, height=300)
+        self.lineNum.tag_configure('line', justify='right')
+        self.lineNum.config(state=DISABLED)
+
+        # self.uniscrollbar = Scrollbar(self.ideWindow)
+        # #self.uniscrollbar.grid(row=self.__uniscrollbarRow, column=self.__uniscrollbarCol, sticky=NS)
+        # self.uniscrollbar.place(x=750, y=10, width=15)
+        # # self.uniscrollbar.pack()
+        # self.uniscrollbar.config(command=self.__scrollBoth)
+        # self.entryBox.config(yscrollcommand=self.__updateScroll)
+        # self.lineNum.config(yscrollcommand=self.__updateScroll)
+
+    # methods that scrolls both text box
+    def scrollBoth(self, action, position, type=None):
+        self.entryBox.yview_moveto(position)
+        self.lineNum.yview_moveto(position)
+
+    def updateScroll(self, first, last, type=None):
+        self.entryBox.yview_moveto(first)
+        self.lineNum.yview_moveto(first)
+        self.uniscrollbar.set(first, last)
 
     def codeOutput(self):
 
         # Output box where the results and errors will be shown
         self.outputBox = Text(self.ideWindow,
-                              font=("Helvetica", 14),
+                              font=("Fixedsys", 16),
                               bg="#eeeeee", bd=1,
-                              fg="#383e42", highlightthickness=1,
-                              insertbackground='white')
+                              fg="#383e42", highlightthickness=1)
 
         self.outputBox.place(x=10, y=315, width=780, height=275)
-
+        self.outputBox.config(state=DISABLED)
 
 
     def startIDE(self):
@@ -76,6 +99,7 @@ class IDE:
         self.topBar()
         self.codeEntry()
         self.codeOutput()
+
         self.ideWindow.mainloop()
 
     def openFile(self):
