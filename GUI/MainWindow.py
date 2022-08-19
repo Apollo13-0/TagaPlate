@@ -25,10 +25,13 @@ class IDE:
 
         myCanvas.pack(fill="both", expand=True)
 
-        # Key command
-        self.ideWindow.bind('<F5>', lambda e: self.compile())
+        # Row counter
+        self.row = 1
 
-        self.row = 0
+        # Key command
+        self.ideWindow.bind("<F5>", lambda e: self.compile())
+        self.ideWindow.bind("<Return>", lambda event: self.addRow())
+        self.ideWindow.bind("<BackSpace>", lambda  event2: self.deleteRow())
 
     def topBar(self):
 
@@ -58,21 +61,19 @@ class IDE:
 
         self.entryBox.place(x=30, y=10, width=750, height=300)
 
-        # first approach of the side bar for numeration
-        self.lineNum = Text(self.ideWindow, bg="#444444", font=("Fixedsys", 16), fg="#eeeeee")
-        self.lineNum.place(x=5, y=10,width=20, height=300)
-        self.lineNum.tag_configure('line', justify='right')
+        # Text box for the line numbers
+        self.lineNum = Text(self.ideWindow, bg="#e0dedb", font=("Fixedsys", 16), fg="#383e42")
+        self.lineNum.place(x=0, y=10, width=30, height=300)
+        self.setLineText("1")
         self.lineNum.config(state=DISABLED)
 
-        # self.uniscrollbar = Scrollbar(self.ideWindow)
-        # #self.uniscrollbar.grid(row=self.__uniscrollbarRow, column=self.__uniscrollbarCol, sticky=NS)
-        # self.uniscrollbar.place(x=750, y=10, width=15)
-        # # self.uniscrollbar.pack()
-        # self.uniscrollbar.config(command=self.__scrollBoth)
-        # self.entryBox.config(yscrollcommand=self.__updateScroll)
-        # self.lineNum.config(yscrollcommand=self.__updateScroll)
+        # sinc scrollbars
+        self.uniscrollbar = Scrollbar(self.ideWindow, orient="vertical", command=self.entryBox.yview)
+        self.uniscrollbar.place(x=782, y=10, width=15)
+        self.uniscrollbar.config(command=self.scrollBoth)
+        self.entryBox.config(yscrollcommand=self.updateScroll)
+        self.lineNum.config(yscrollcommand=self.updateScroll)
 
-    # methods that scrolls both text box
     def scrollBoth(self, action, position, type=None):
         self.entryBox.yview_moveto(position)
         self.lineNum.yview_moveto(position)
@@ -93,7 +94,6 @@ class IDE:
         self.outputBox.place(x=10, y=315, width=780, height=275)
         self.outputBox.config(state=DISABLED)
 
-
     def startIDE(self):
 
         self.topBar()
@@ -110,17 +110,31 @@ class IDE:
                                           ("All files", "*.*")))
         # open the document and obtains the text
         with open(path, "r") as f:
+            cont = 1
             code = ""
+            self.tmpText = ""
+
             for line in f:
                 code += line
-        # set text on the entry box
-        self.setCode(code)
+                cont = cont+1
 
-    def setCode(self, codeRaw):
+            # Creatation of the str for the line text box
+            for num in range(1, cont):
+                self.tmpText = self.tmpText + str(num) + "\n"
+
+            # set text on the line box
+            self.lineNum.config(state=NORMAL)
+            self.setLineText(self.tmpText)
+            self.lineNum.config(state=DISABLED)
+
+            # set text on the entry box
+            self.setEntryCode(code)
+
+    def setEntryCode(self, codeRaw):
         self.entryBox.delete('1.0', END)
         self.entryBox.insert(END, codeRaw)
 
-    def getCode(self):
+    def getEntryCode(self):
         code = self.entryBox.get("1.0",END)
         return code
 
@@ -133,12 +147,50 @@ class IDE:
                                             ("All files", "*.*")))
         # Saves the text in the new document
         file = open(path, "w")
-        code = self.getCode()
+        code = self.getEntryCode()
         file.write(code)
         file.close()
+
+    def setLineText(self, numbersTxt):
+        self.lineNum.delete('1.0', END)
+        self.lineNum.insert(END, numbersTxt)
 
     def compile(self):
         pass
 
     def runCompile(self):
         pass
+
+    def addRow(self):
+
+        # Row counter incrementation
+        self.row = self.row + 1
+        self.tmpText = ""
+
+        # Creation of the str for the line text box
+        for num in range(1, self.row + 1):
+            self.tmpText = self.tmpText + str(num) + "\n"
+
+        # set text on the line box
+        self.lineNum.config(state=NORMAL)
+        self.setLineText(self.tmpText)
+        self.lineNum.config(state=DISABLED)
+
+    def deleteRow(self):
+
+        # Check if is only one row and sets row counter
+        if self.row == 1:
+            self.row = 1
+        else:
+            self.row = self.row - 1
+
+        self.tmpText = ""
+
+        # Creation of the str for the line text box
+        for num in range(1, self.row + 1):
+            self.tmpText = self.tmpText + str(num) + "\n"
+
+        # set text on the line box
+        self.lineNum.config(state=NORMAL)
+        self.setLineText(self.tmpText)
+        self.lineNum.config(state=DISABLED)
