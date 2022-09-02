@@ -2,10 +2,9 @@ import ply.lex as lex
 
 # list of tokens names
 
-tokens = {
+tokens = [
     "NAME",
     "INT", "FLOAT",
-    "STRING",
 
     # Reserved words
     "NEW",
@@ -16,7 +15,7 @@ tokens = {
     "ALTERB",
     "MOVERIGHT", "MOVELEFT", "HAMMER", "STOP",
     "ISTRUE",
-    "REPEAT", "BREAK"
+    "REPEAT", "BREAK",
     "UNTIL", "WHILE",
     "CASE", "WHEN", "ELSE",
     "PRINTVALUES",
@@ -31,7 +30,7 @@ tokens = {
     "MODULE",
 
     # <, <=,  >, >=, ==, <>
-    'LT', 'LE', 'GT', 'GE', "EQUAL", "NOT_EQUAL"
+    'LT', 'LE', 'GT', 'GE', "EQUAL", "NOT_EQUAL",
 
     # Assigment =
     "ASSING",
@@ -41,9 +40,9 @@ tokens = {
     "LPAREN", "RPAREN",
     "LBRACE", "RBRACE",
     "COMMA", "DOT",
-    "SEMICOLON", "COLON"
+    "SEMICOLON", "COLON",
 
-}
+]
 
 # Regular expression rules for simple tokens
 
@@ -65,48 +64,51 @@ def t_INT(t):
         t.value = 0
     return t
 
-def t_STRING(t):
-    r'\d+'
-    try:
-        t.value = str(t.value)
-    except ValueError:
-        print("String value too large %d", t.value)
-        t.value = 0
+def t_NAME(t):
+    r'@[A-Za-z_][A-Za-z0-9_]*'
+    t.type = "NAME"
     return t
 
-t_NEW = r"\New"
-t_PROC = r"\Proc"
+def t_error(t):
+    print("Illegal character '%s'" % t.value[0])
+    t.lexer.skip(1)
+
+
+t_NEW = "New"
+t_PROC = "Proc"
 # PRINCIPAL
-t_CALL = r"\CALL"
-t_NUM = r"\Num"  # ver si se maneja enteros y/o floats
-t_BOOL = r"\Bool"
-t_VALUES = r"\Values"
-t_ALTER = r"\Alter"
-t_ADD = r"\ADD"
-t_SUB = r"\SUB"
-t_MUL = r"\MUL"
-t_DIV = r"\DIV"
-t_ALTERB = r"\AlterB"
-t_MOVERIGHT = r"\MoveRight"
-t_MOVELEFT = r"\MoveLeft"
-t_HAMMER = r"\Hammer"
-t_STOP = r"\Stop"
-t_ISTRUE = r"\IsTrue"
-t_REPEAT = r"\Repeat"
-t_BREAK = r"\Break"
-t_UNTIL = r"\Until"
-t_WHILE = r"\While"
-t_CASE = r"\Case"
-t_WHEN = r"\When"
-t_ELSE = r"\Else"
-t_PRINTVALUES = r"\PrintValues"
+t_CALL = "CALL"
+t_NUM = "Num"  # ver si se maneja enteros y/o floats
+t_BOOL = "Bool"
+t_VALUES = "Values"
+t_ALTER = "Alter"
+t_ADD = "ADD"
+t_SUB = "SUB"
+t_MUL = "MUL"
+t_DIV = "DIV"
+t_ALTERB = "AlterB"
+t_MOVERIGHT = "MoveRight"
+t_MOVELEFT = "MoveLeft"
+t_HAMMER = "Hammer"
+t_STOP = "Stop"
+t_ISTRUE = "IsTrue"
+t_REPEAT = "Repeat"
+t_BREAK = "Break"
+t_UNTIL = "Until"
+t_WHILE = "While"
+t_CASE = "Case"
+t_WHEN = "When"
+t_ELSE = "Else"
+t_PRINTVALUES = "PrintValues"
+
+
 
 # Operators
 t_PLUS = r'\+'
 t_MINUS = r'-'
 t_TIMES = r'\*'
-t_INT_DIVIDE = r'//'
-t_DIVIDE = r'/'
+t_INT_DIVIDE = r'\//'
+t_DIVIDE = r'\/'
 t_MODULE = r'%'
 
 t_LT = r'<'
@@ -130,4 +132,6 @@ t_SEMICOLON = r"\;"
 t_COLON = r"\:"
 
 
-t_ignore = ' \t'
+t_ignore = " "
+
+lexer = lex.lex()
