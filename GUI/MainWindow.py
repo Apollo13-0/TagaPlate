@@ -31,7 +31,7 @@ class IDE:
         # Key command
         self.ideWindow.bind("<F5>", lambda e: self.compile())
         self.ideWindow.bind("<Return>", lambda event: self.addRow())
-        self.ideWindow.bind("<BackSpace>", lambda  event2: self.deleteRow())
+        self.ideWindow.bind("<BackSpace>", lambda event2: self.checkRow())
 
     def topBar(self):
 
@@ -194,3 +194,10 @@ class IDE:
         self.lineNum.config(state=NORMAL)
         self.setLineText(self.tmpText)
         self.lineNum.config(state=DISABLED)
+
+    def checkRow(self):
+        # Checks if the value of the Row counter is equal to the value of Row
+        content = self.entryBox.get("1.0","end")
+        linebrake = content.count('\n')
+        if self.row > int(linebrake):
+            self.deleteRow()
