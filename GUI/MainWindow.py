@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import filedialog
+from Lexer import tokens
 
 class IDE:
 
@@ -156,8 +157,16 @@ class IDE:
         self.lineNum.insert(END, numbersTxt)
 
     def compile(self):
+        self.outputBox.config(state=NORMAL)
+        file = open("compile.txt","w")
+        code = self.getEntryCode()
+        file.write(code)
+        file.close()
+        toks = tokens.read_File("compile.txt")
+        for tok in toks:
+            self.outputBox.insert(END,(tok + "\n"))
+        self.outputBox.config(state=DISABLED)
         pass
-
     def runCompile(self):
         pass
 

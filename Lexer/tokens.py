@@ -1,4 +1,8 @@
 import ply.lex as lex
+import re
+import codecs
+import os
+import sys
 
 # list of tokens names
 
@@ -19,7 +23,6 @@ tokens = [
     "UNTIL", "WHILE",
     "CASE", "WHEN", "ELSE",
     "PRINTVALUES",
-
 
     # Operators
     "PLUS",
@@ -44,6 +47,7 @@ tokens = [
 
 ]
 
+
 # Regular expression rules for simple tokens
 
 def t_FLOAT(t):
@@ -55,6 +59,7 @@ def t_FLOAT(t):
         t.value = 0
     return t
 
+
 def t_INT(t):
     r'\d+'
     try:
@@ -63,16 +68,22 @@ def t_INT(t):
         print("Integer value too large %d", t.value)
         t.value = 0
     return t
-
 def t_NAME(t):
     r'@[A-Za-z_][A-Za-z0-9_]*'
     t.type = "NAME"
     return t
 
+
 def t_error(t):
     print("Illegal character '%s'" % t.value[0])
     t.lexer.skip(1)
+def t_comment(t):
+    r'\--.*'
+    pass
 
+def t_ccode_nonspace(t):
+ r'\s+'
+ pass
 
 t_NEW = "New"
 t_PROC = "Proc"
@@ -100,8 +111,6 @@ t_CASE = "Case"
 t_WHEN = "When"
 t_ELSE = "Else"
 t_PRINTVALUES = "PrintValues"
-
-
 
 # Operators
 t_PLUS = r'\+'
@@ -131,7 +140,19 @@ t_DOT = r"\."
 t_SEMICOLON = r"\;"
 t_COLON = r"\:"
 
-
 t_ignore = " "
 
 lexer = lex.lex()
+
+
+def read_File(dir):
+    fp = codecs.open(dir, "r", "utf-8")
+    cadena = fp.read()
+    fp.close()
+    lexer.input(cadena)
+    toks = []
+    while True:
+        tok = lexer.token()
+        if not tok: break
+        toks.append(str(tok))
+    return toks
