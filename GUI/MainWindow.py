@@ -158,6 +158,7 @@ class IDE:
 
     def compile(self):
         self.outputBox.config(state=NORMAL)
+        self.outputBox.delete('1.0',END)
         file = open("compile.txt","w")
         code = self.getEntryCode()
         file.write(code)
@@ -166,6 +167,7 @@ class IDE:
         for tok in toks:
             self.outputBox.insert(END,(tok + "\n"))
         self.outputBox.config(state=DISABLED)
+        tokens.cleartoks()
         pass
     def runCompile(self):
         pass

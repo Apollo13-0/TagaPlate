@@ -1,11 +1,9 @@
 import ply.lex as lex
-import re
 import codecs
-import os
-import sys
 
 # list of tokens names
-
+global toks
+toks =[]
 tokens = [
     "NAME",
     "INT", "FLOAT",
@@ -56,6 +54,7 @@ def t_FLOAT(t):
         t.value = float(t.value)
     except ValueError:
         print("Floaat value too large %d", t.value)
+        toks.append(str("Floaat value too large %d" + t.value))
         t.value = 0
     return t
 
@@ -66,6 +65,7 @@ def t_INT(t):
         t.value = int(t.value)
     except ValueError:
         print("Integer value too large %d", t.value)
+        toks.append(str("Integer value too large %d" + t.value))
         t.value = 0
     return t
 def t_NAME(t):
@@ -76,6 +76,7 @@ def t_NAME(t):
 
 def t_error(t):
     print("Illegal character '%s'" % t.value[0])
+    toks.append(str("Illegal character '%s'" % t.value[0]))
     t.lexer.skip(1)
 def t_comment(t):
     r'\--.*'
@@ -150,9 +151,10 @@ def read_File(dir):
     cadena = fp.read()
     fp.close()
     lexer.input(cadena)
-    toks = []
     while True:
         tok = lexer.token()
         if not tok: break
         toks.append(str(tok))
     return toks
+def cleartoks():
+    toks.clear()
