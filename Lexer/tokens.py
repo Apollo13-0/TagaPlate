@@ -2,7 +2,6 @@ import ply.lex as lex
 import codecs
 
 # list of tokens names
-global toks
 toks =[]
 tokens = [
     "NAME",
