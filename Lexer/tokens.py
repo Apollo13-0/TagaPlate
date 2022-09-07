@@ -2,24 +2,27 @@ import ply.lex as lex
 import codecs
 
 # list of tokens names
-toks =[]
+toks = []
+
+reserved = {
+    # Reserved words
+    "New": "NEW",
+    "Proc": "PROC", "@Principal": "PRINCIPAL",
+    "CALL": "CALL", "Num": "NUM", "Bool": "BOOL",
+    "Values": "VALUES",
+    "Alter": "ALTER", "ADD": "ADD", "SUB": "SUB", "MUL": "MUL", "DIV": "DIV",
+    "AlterB": "ALTERB",
+    "MoveRight": "MOVERIGHT", "MoveLeft": "MOVELEFT", "Hammer": "HAMMER", "Stop": "STOP",
+    "IsTrue": "ISTRUE",
+    "Repeat": "REPEAT", "break": "BREAK",
+    "Until": "UNTIL", "While": "WHILE",
+    "Case": "CASE", "When": "WHEN", "Else": "ELSE",
+    "PrintValues": "PRINTVALUES"
+}
+
 tokens = [
     "NAME",
     "INT", "FLOAT",
-
-    # Reserved words
-    "NEW",
-    "PROC", "PRINCIPAL",
-    "CALL", "NUM", "BOOL",
-    "VALUES",
-    "ALTER", "ADD", "SUB", "MUL", "DIV",
-    "ALTERB",
-    "MOVERIGHT", "MOVELEFT", "HAMMER", "STOP",
-    "ISTRUE",
-    "REPEAT", "BREAK",
-    "UNTIL", "WHILE",
-    "CASE", "WHEN", "ELSE",
-    "PRINTVALUES",
 
     # Operators
     "PLUS",
@@ -42,7 +45,7 @@ tokens = [
     "COMMA", "DOT",
     "SEMICOLON", "COLON",
 
-]
+] + list(reserved.values())
 
 
 # Regular expression rules for simple tokens
@@ -52,8 +55,8 @@ def t_FLOAT(t):
     try:
         t.value = float(t.value)
     except ValueError:
-        print("Floaat value too large %d", t.value)
-        toks.append(str("Floaat value too large %d" + t.value))
+        # print("Floaat value too large %d", t.value)
+        toks.append(str("Sintax error: Float value too large %d" + t.value))
         t.value = 0
     return t
 
@@ -63,28 +66,52 @@ def t_INT(t):
     try:
         t.value = int(t.value)
     except ValueError:
-        print("Integer value too large %d", t.value)
-        toks.append(str("Integer value too large %d" + t.value))
+        # print("Integer value too large %d", t.value)
+        toks.append(str("Sintax error: Integer value too large %d" + t.value))
         t.value = 0
     return t
+
+
+def t_ID(t):
+    r'[A-Z_][a-zA-Z_0-9]*'
+    if reserved.get(t.value, 'ID') != "ID":
+        t.type = reserved.get(t.value, 'ID')  # Check for reserved words
+        return t
+    else:
+        toks.append(str("Sintax error: unknown token type 'ID' %d" + t.value))
+
+
 def t_NAME(t):
-    r'@[A-Za-z_][A-Za-z0-9_]*'
-    t.type = "NAME"
-    return t
+    r'@[A-Za-z_#][A-Za-z0-9_#]*'
+
+    if len(t.value) >= 3 and len(t.value) <= 10:
+        t.type = "NAME"
+        return t
+    else:
+        toks.append(str("Sintax error: String value must be between 3 and 10 %d " + t.value))
 
 
 def t_error(t):
-    print("Illegal character '%s'" % t.value[0])
-    toks.append(str("Illegal character '%s'" % t.value[0]))
+    # print("Illegal character '%s'" % t.value[0])
+    toks.append(str("Sintax error: Illegal character '%s'" % t.value[0]))
     t.lexer.skip(1)
+
+
 def t_comment(t):
     r'\--.*'
     pass
 
-def t_ccode_nonspace(t):
- r'\s+'
- pass
 
+def t_ccode_nonspace(t):
+    r'\s+'
+    pass
+
+# Define a rule so we can track line numbers
+def t_newline(t):
+    r'\n+'
+    t.lexer.lineno += len(t.value)
+
+"""
 t_NEW = "New"
 t_PROC = "Proc"
 # PRINCIPAL
@@ -111,7 +138,7 @@ t_CASE = "Case"
 t_WHEN = "When"
 t_ELSE = "Else"
 t_PRINTVALUES = "PrintValues"
-
+"""
 # Operators
 t_PLUS = r'\+'
 t_MINUS = r'-'
@@ -155,5 +182,7 @@ def read_File(dir):
         if not tok: break
         toks.append(str(tok))
     return toks
+
+
 def cleartoks():
     toks.clear()

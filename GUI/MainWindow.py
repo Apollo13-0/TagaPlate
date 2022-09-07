@@ -169,6 +169,7 @@ class IDE:
         self.outputBox.config(state=DISABLED)
         tokens.cleartoks()
         pass
+
     def runCompile(self):
         pass
 
