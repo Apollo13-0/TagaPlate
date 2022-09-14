@@ -4,6 +4,12 @@ import codecs
 import re
 from Lexer.tokens import tokens
 
+def p_expression_new(p):
+    '''
+    New : NEW NAME COMMA LPAREN Values RPAREN
+    '''
+    p[0] = (p[2], p[5])
+    print(p[0])
 
 def p_expression_Num(p):
     '''
