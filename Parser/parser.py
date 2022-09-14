@@ -5,12 +5,23 @@ import re
 from Lexer.tokens import tokens
 
 
+
 def p_expression_new(p):
     '''
     New : NEW NAME COMMA LPAREN NUM COMMA Num RPAREN
         | NEW NAME COMMA LPAREN BOOL COMMA Bool RPAREN
     '''
     p[0] = (p[2], p[5], p[7])
+    print(p[0])
+
+
+def p_expression_values(p):
+    '''
+    Values : VALUES LPAREN NAME COMMA Num RPAREN
+           | VALUES LPAREN NAME COMMA Bool RPAREN
+           | VALUES LPAREN NAME COMMA ALTER RPAREN
+    '''
+    p[0] = (p[3], p[5])
     print(p[0])
 
 
@@ -31,14 +42,6 @@ def p_expression_Plus(p):
     print(p[0])
 
 
-def p_expression_values(p):
-    '''
-    Values : Num
-           | Bool
-    '''
-    p[0] = p[1]
-
-
 def p_expression_boolean(p):
     '''
     Bool : TRUE
@@ -50,30 +53,63 @@ def p_expression_boolean(p):
 
 def p_expression_Alter(p):
     '''
-    Alter : Num ADD Num
-          | Num SUB Num
-          | Num MUL Num
-          | Num DIV Num
+    Alter : ALTER LPAREN NAME COMMA Operator COMMA Num RPAREN
     '''
-    p[0] = (p[1], p[2], p[3])
+    p[0] = (p[3], p[5], p[7])
+    print(p[0])
+
+
+def p_expression_operator(p):
+    '''
+    Operator : ADD
+             | SUB
+             | MUL
+             | DIV
+    '''
+    p[0] = p[1]
 
 
 def p_expression_AlterB(p):
     '''
-    AlterB : Bool
+    AlterB : ALTERB LPAREN NAME RPAREN
+    '''
+    p[0] = p[3]
+    print(p[0])
+
+
+def p_expression_moveR(p):
+    '''
+     MoveRight : MOVERIGHT
     '''
     p[0] = p[1]
 
 
-def p_calc(p):
+def p_expression_moveL(p):
     '''
-
-    calc : Values
-        | empty
+    MoveLeft : MOVELEFT
     '''
-    print(p[1])
     p[0] = p[1]
 
+def p_expression_hammer(p):
+    '''
+    Hammer : HAMMER LPAREN Position RPAREN
+    '''
+    p[0] = p[3]
+
+def p_expression_position(p):
+    '''
+    Position : N
+             | S
+             | E
+             | O
+    '''
+    p[0] = p[1]
+
+def p_expression_stop(p):
+    '''
+    Stop : STOP
+    '''
+    p[0] = p[1]
 
 def p_empty(p):
     '''

@@ -2,7 +2,7 @@ import ply.lex as lex
 import codecs
 
 # list of tokens names
-toks =[]
+toks = []
 tokens = [
     "NAME",
     "INT", "FLOAT",
@@ -30,7 +30,6 @@ tokens = [
     "INT_DIVIDE",
     "DIVIDE",
     "MODULE",
-
 
     # <, <=,  >, >=, ==, <>
     'LT', 'LE', 'GT', 'GE', "EQUAL", "NOT_EQUAL",
@@ -70,6 +69,8 @@ def t_INT(t):
         toks.append(str("Integer value too large %d" + t.value))
         t.value = 0
     return t
+
+
 def t_NAME(t):
     r'@[A-Za-z_][A-Za-z0-9_]*'
     t.type = "NAME"
@@ -80,13 +81,17 @@ def t_error(t):
     print("Illegal character '%s'" % t.value[0])
     toks.append(str("Illegal character '%s'" % t.value[0]))
     t.lexer.skip(1)
+
+
 def t_comment(t):
     r'\--.*'
     pass
 
+
 def t_ccode_nonspace(t):
- r'\s+'
- pass
+    r'\s+'
+    pass
+
 
 t_NEW = "New"
 t_PROC = "Proc"
@@ -160,5 +165,7 @@ def read_File(dir):
         if not tok: break
         toks.append(str(tok))
     return toks
+
+
 def cleartoks():
     toks.clear()
