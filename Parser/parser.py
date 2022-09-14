@@ -103,11 +103,13 @@ def p_expression_moveL(p):
     '''
     p[0] = p[1]
 
+
 def p_expression_hammer(p):
     '''
     Hammer : HAMMER LPAREN Position RPAREN
     '''
     p[0] = p[3]
+
 
 def p_expression_position(p):
     '''
@@ -118,11 +120,13 @@ def p_expression_position(p):
     '''
     p[0] = p[1]
 
+
 def p_expression_stop(p):
     '''
     Stop : STOP
     '''
     p[0] = p[1]
+
 
 def p_empty(p):
     '''
