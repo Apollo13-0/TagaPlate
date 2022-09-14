@@ -4,12 +4,15 @@ import codecs
 import re
 from Lexer.tokens import tokens
 
+
 def p_expression_new(p):
     '''
-    New : NEW NAME COMMA LPAREN Values RPAREN
+    New : NEW NAME COMMA LPAREN NUM COMMA Num RPAREN
+        | NEW NAME COMMA LPAREN BOOL COMMA Bool RPAREN
     '''
-    p[0] = (p[2], p[5])
+    p[0] = (p[2], p[5], p[7])
     print(p[0])
+
 
 def p_expression_Num(p):
     '''
@@ -31,7 +34,16 @@ def p_expression_Plus(p):
 def p_expression_values(p):
     '''
     Values : Num
-           | BOOL
+           | Bool
+    '''
+    p[0] = p[1]
+
+
+def p_expression_boolean(p):
+    '''
+    Bool : TRUE
+         | FALSE
+         | empty
     '''
     p[0] = p[1]
 
@@ -48,7 +60,7 @@ def p_expression_Alter(p):
 
 def p_expression_AlterB(p):
     '''
-    AlterB : BOOL
+    AlterB : Bool
     '''
     p[0] = p[1]
 

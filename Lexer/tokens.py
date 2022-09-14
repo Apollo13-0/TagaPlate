@@ -20,6 +20,8 @@ tokens = [
     "UNTIL", "WHILE",
     "CASE", "WHEN", "ELSE",
     "PRINTVALUES",
+    "TRUE",
+    "FALSE",
 
     # Operators
     "PLUS",
@@ -28,6 +30,7 @@ tokens = [
     "INT_DIVIDE",
     "DIVIDE",
     "MODULE",
+
 
     # <, <=,  >, >=, ==, <>
     'LT', 'LE', 'GT', 'GE', "EQUAL", "NOT_EQUAL",
