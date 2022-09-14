@@ -114,6 +114,8 @@ t_CASE = "Case"
 t_WHEN = "When"
 t_ELSE = "Else"
 t_PRINTVALUES = "PrintValues"
+t_FALSE = "False"
+t_TRUE = "True"
 
 # Operators
 t_PLUS = r'\+'
