@@ -22,6 +22,9 @@ tokens = [
     "PRINTVALUES",
     "TRUE",
     "FALSE",
+    "OPERATOR",
+    "N", "S", "E", "O",
+    "POSITION",
 
     # Operators
     "PLUS",
@@ -121,6 +124,13 @@ t_ELSE = "Else"
 t_PRINTVALUES = "PrintValues"
 t_FALSE = "False"
 t_TRUE = "True"
+t_OPERATOR = "Operator"
+t_N = "N"
+t_S = "S"
+t_O = "O"
+t_E = "E"
+t_POSITION = "Position"
+
 
 # Operators
 t_PLUS = r'\+'

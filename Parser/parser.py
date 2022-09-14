@@ -5,6 +5,19 @@ import re
 from Lexer.tokens import tokens
 
 
+def p_symbols(p):
+    '''
+    symbol : New
+    | Values
+    | Alter
+    | AlterB
+    | Operator
+    | MoveRight
+    | MoveLeft
+    | Hammer
+    '''
+    p[0] = p[1]
+
 
 def p_expression_new(p):
     '''
@@ -121,6 +134,7 @@ def p_empty(p):
 parser = yacc.yacc()
 
 while True:
+
     try:
         s = input('')
     except EOFError:
