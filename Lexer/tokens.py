@@ -18,7 +18,7 @@ tokens = [
     "ISTRUE",
     "REPEAT", "BREAK",
     "UNTIL", "WHILE",
-    "CASE", "WHEN", "ELSE",
+    "CASE", "WHEN", "ELSE", "CASE_WHEN", "THEN",
     "PRINTVALUES",
     "TRUE",
     "FALSE",
@@ -40,12 +40,13 @@ tokens = [
     # Assigment =
     "ASSING",
 
-    # Bracket ( ) { } , . ; :
+    # Bracket ( ) { } , . ; : [ ]
 
     "LPAREN", "RPAREN",
     "LBRACE", "RBRACE",
     "COMMA", "DOT",
     "SEMICOLON", "COLON",
+    "LBRACKET", "RBRACKET"
 
 ]
 
@@ -120,6 +121,8 @@ t_UNTIL = "Until"
 t_WHILE = "While"
 t_CASE = "Case"
 t_WHEN = "When"
+t_THEN = "Then"
+t_CASE_WHEN = "Case_When"
 t_ELSE = "Else"
 t_PRINTVALUES = "PrintValues"
 t_FALSE = "False"
@@ -159,6 +162,8 @@ t_COMMA = r"\,"
 t_DOT = r"\."
 t_SEMICOLON = r"\;"
 t_COLON = r"\:"
+t_LBRACKET = r"\["
+t_RBRACKET = r"\]"
 
 t_ignore = " "
 
