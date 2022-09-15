@@ -25,6 +25,8 @@ tokens = [
     "OPERATOR",
     "N", "S", "E", "O",
     "POSITION",
+    "INSTRUCTIONS",
+    "CONCATENATION",
 
     # Operators
     "PLUS",
@@ -133,6 +135,8 @@ t_S = "S"
 t_O = "O"
 t_E = "E"
 t_POSITION = "Position"
+t_INSTRUCTIONS = "Instructions"
+t_CONCATENATION = "Concatenation"
 
 
 # Operators

@@ -117,7 +117,6 @@ def p_expression_operator(p):
     '''
     p[0] = p[1]
 
-
 def p_expression_AlterB(p):
     '''
     AlterB : ALTERB LPAREN NAME RPAREN
