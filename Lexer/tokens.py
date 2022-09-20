@@ -82,6 +82,10 @@ def t_NAME(t):
     t.type = "NAME"
     return t
 
+def t_STRING(t):
+    r'"[A-Za-z_][A-Za-z0-9_]*"'
+    t.type = "STRING"
+    return t
 
 def t_error(t):
     print("Illegal character '%s'" % t.value[0])

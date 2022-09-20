@@ -263,8 +263,17 @@ def p_expresion_instructions_concatenation(p):
 def p_expression_printValues(p):
     '''
     PrintValues : PRINTVALUES LPAREN NAME RPAREN
+                | PRINTVALUES LPAREN STRING RPAREN
     '''
     p[0] = (p[1], p[3])
+    print(p[0])
+
+def p_add_expression_printValues(p):
+    '''
+    PrintValues : PRINTVALUES LPAREN STRING COMMA NAME RPAREN
+                | PRINTVALUES LPAREN NAME COMMA STRING RPAREN
+    '''
+    p[0] = (p[1], p[3], p[5])
     print(p[0])
 
 
