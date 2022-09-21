@@ -4,6 +4,8 @@ import codecs
 import re
 from Lexer.tokens import tokens
 
+pars = []
+
 
 def p_symbols(p):
     '''
@@ -77,6 +79,7 @@ def p_expression_boolean(p):
     '''
     p[0] = p[1]
 
+
 def p_another_boolean(p):
     '''
     Bool : Num LT Num
@@ -100,6 +103,7 @@ def p_another_boolean(p):
     '''
     p[0] = (p[1], p[2], p[3])
 
+
 def p_expression_Alter(p):
     '''
     Alter : ALTER LPAREN NAME COMMA Operator COMMA Num RPAREN
@@ -116,6 +120,7 @@ def p_expression_operator(p):
              | DIV
     '''
     p[0] = p[1]
+
 
 def p_expression_AlterB(p):
     '''
@@ -211,11 +216,14 @@ def p_expression_case(p):
     '''
     p[0] = (p[1], p[2], p[3])
     print(p[0])
+
+
 def p_case_else(p):
     '''
     Case : CASE NAME When ELSE LPAREN Instructions RPAREN
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[6])
+
 
 def p_expression_whenValue(p):
     '''
@@ -231,9 +239,6 @@ def p_expression_whenConcatenated(p):
     When : When COMMA When
     '''
     p[0] = (p[2], p[1], p[3])
-
-
-
 
 
 def p_expression_instructions(p):
@@ -268,6 +273,7 @@ def p_expression_printValues(p):
     p[0] = (p[1], p[3])
     print(p[0])
 
+
 def p_add_expression_printValues(p):
     '''
     PrintValues : PRINTVALUES LPAREN STRING COMMA NAME RPAREN
@@ -284,12 +290,19 @@ def p_empty(p):
     p[0] = None
 
 
-parser = yacc.yacc()
 
-while True:
 
-    try:
-        s = input('')
-    except EOFError:
-        break
-    parser.parse(s)
+
+
+def readFile(dir):
+    fp = codecs.open(dir, "r", "utf-8")
+    cadena = fp.read()
+    parser = yacc.yacc()
+    fp.close()
+    par = parser.parse(cadena)
+    print(str(par))
+    return par
+
+
+def clearpars():
+    pars.clear()

@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import filedialog
 from Lexer import tokens
+from Parser import parser
 
 class IDE:
 
@@ -164,10 +165,16 @@ class IDE:
         file.write(code)
         file.close()
         toks = tokens.read_File("compile.txt")
+        pars = parser.readFile("compile.txt")
+        print(pars)
+        print(toks)
+        for par in pars:
+            self.outputBox.insert(END,(str(par) + "\n"))
         for tok in toks:
-            self.outputBox.insert(END,(tok + "\n"))
+            self.outputBox.insert(END,(str(tok) + "\n"))
         self.outputBox.config(state=DISABLED)
         tokens.cleartoks()
+        parser.clearpars()
         pass
     def runCompile(self):
         pass
