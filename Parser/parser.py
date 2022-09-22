@@ -69,8 +69,9 @@ def p_expression_Num(p):
     Num : INT
         | FLOAT
     '''
-    p[0] = p[1]
-    print(p[1])
+
+    p[0] = float(p[1])
+
 
 
 def p_expression_Plus(p):
@@ -79,10 +80,23 @@ def p_expression_Plus(p):
         | Num MINUS Num
         | Num TIMES Num
         | Num DIVIDE Num
+        | Num INT_DIVIDE Num
         | Num MODULE Num
     '''
-    p[0] = (p[2], p[1], p[3])
-    print(p[0])
+
+    if p[2] == '+':
+        p[0] = float(p[1]) + float(p[3])
+    elif p[2] == '-':
+        p[0] = float(p[1]) - float(p[3])
+    elif p[2] == '*':
+        p[0] = float(p[1]) * float(p[3])
+    elif p[2] == '/':
+        p[0] = float(p[1]) + float(p[3])
+    elif p[2] == '//':
+        p[0] = int(float(p[1]) + float(p[3]))
+    elif p[2] == '%':
+        p[0] = float(p[1]) % float(p[3])
+
 
 
 def p_expression_boolean(p):
