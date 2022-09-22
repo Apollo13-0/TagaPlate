@@ -1,1 +1,4 @@
-New @var, (Num,5);
+Proc @proc(
+New @var, (Num, 4);
+);
+

@@ -4,10 +4,8 @@ import codecs
 import re
 from Lexer.tokens import tokens
 
-globales = []
 pars = []
-
-
+errors = []
 def p_symbols(p):
     '''
     symbol : New
@@ -235,19 +233,12 @@ def p_case_else(p):
 
 def p_expression_whenValue(p):
     '''
-    When : WHEN Num THEN LPAREN Instructions RPAREN
-        | WHEN Bool THEN LPAREN Instructions RPAREN
+    When : WHEN Num THEN LPAREN Instructions RPAREN SEMICOLON
+        | WHEN Bool THEN LPAREN Instructions RPAREN SEMICOLON
+
     '''
     p[0] = (p[1], p[2], p[5])
     print(p[0])
-
-
-def p_expression_whenConcatenated(p):
-    '''
-    When : When COMMA When
-    '''
-    p[0] = (p[2], p[1], p[3])
-
 
 def p_expression_instructions(p):
     '''
@@ -301,6 +292,11 @@ def p_expression_Proc(p):
     Proc : PROC NAME LPAREN Instructions RPAREN SEMICOLON
     '''
     p[0] = (p[1], p[2], p[4])
+def p_expression_Proc_error(p):
+    '''
+    Proc : PROC error LPAREN  Instructions RPAREN SEMICOLON
+    '''
+    print("Syntax error: Procedure does not include an identifier")
 
 def p_expression_Principal(p):
     '''
@@ -320,16 +316,23 @@ def p_expression_Body(p):
         p[0] = (p[1], p[2])
     elif len(p) == 2:
         p[0] = p[1]
+def p_expression_Body_error(p):
+    '''
+    Body : Procs error Proc
+         | error Procs
+         | Instructions
+         | Procs
+    '''
+    error_message = "Syntax error: Body of the program does not include @Principal procedure"
+    errors.append(error_message)
+    print(error_message)
+    raise SyntaxError
+
 def p_empty(p):
     '''
     empty :
     '''
     p[0] = None
-
-
-
-
-
 
 def readFile(dir):
     fp = codecs.open(dir, "r", "utf-8")
@@ -338,7 +341,7 @@ def readFile(dir):
     fp.close()
     par = parser.parse(cadena)
     print(str(par))
-    return par
+    return errors
 
 
 def clearpars():

@@ -3,6 +3,7 @@ import codecs
 
 # list of tokens names
 toks = []
+errors = []
 tokens = [
     "NAME",
     "INT", "FLOAT","STRING",
@@ -186,9 +187,10 @@ def read_File(dir):
     lexer.input(cadena)
     while True:
         tok = lexer.token()
-        if not tok: break
+        if not tok:
+            break
         toks.append(str(tok))
-    return toks
+    return errors
 
 
 def cleartoks():
