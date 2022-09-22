@@ -3,10 +3,16 @@ import os
 import codecs
 import re
 from Lexer.tokens import tokens
+import socket
 
 run_flag = True
 pars = []
 errors = []
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+def send(msg):
+    sock.sendall(b'msg')
 def p_symbols(p):
     '''
     symbol : New
@@ -134,7 +140,7 @@ def p_expression_AlterB(p):
     AlterB : ALTERB LPAREN NAME RPAREN
     '''
     p[0] = (p[1], p[3])
-    print(p[0])
+
 
 
 def p_expression_moveR(p):
@@ -142,6 +148,8 @@ def p_expression_moveR(p):
      MoveRight : MOVERIGHT
     '''
     p[0] = p[1]
+    send('a')
+
 
 
 def p_expression_moveL(p):
@@ -149,6 +157,7 @@ def p_expression_moveL(p):
     MoveLeft : MOVELEFT
     '''
     p[0] = p[1]
+    send('b')
 
 
 def p_expression_hammer(p):
@@ -156,6 +165,17 @@ def p_expression_hammer(p):
     Hammer : HAMMER LPAREN Position RPAREN
     '''
     p[0] = (p[1], p[3])
+
+    if p[3] == "N":
+        send('f')
+    elif p[3] == "S":
+        send('e')
+    elif p[3] == "E":
+        send('d')
+    elif p[3] == "O":
+        send('c')
+
+
 
 
 def p_expression_position(p):
@@ -338,6 +358,13 @@ def readFile(dir, run):
 
     if not run:
         run_flag = False
+    if run_flag:
+        try:
+            sock.connect(("1922.168.4.1", 8888))
+            print("Connected to the server")
+        except IOError:
+            print("Could not establish connection with Server")
+
     fp = codecs.open(dir, "r", "utf-8")
     cadena = fp.read()
     parser = yacc.yacc()
