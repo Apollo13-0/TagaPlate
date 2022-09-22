@@ -160,12 +160,13 @@ class IDE:
     def compile(self):
         self.outputBox.config(state=NORMAL)
         self.outputBox.delete('1.0',END)
+        self.outputBox.update()
         file = open("compile.txt","w")
         code = self.getEntryCode()
         file.write(code)
         file.close()
         toks = tokens.read_File("compile.txt")
-        pars = parser.readFile("compile.txt")
+        pars = parser.readFile("compile.txt", False)
         print(pars)
         print(toks)
         for par in pars:

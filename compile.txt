@@ -1,4 +1,4 @@
-Proc @proc(
+@Principal(
 New @var, (Num, 4);
 );
 

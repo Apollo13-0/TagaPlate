@@ -4,6 +4,7 @@ import codecs
 import re
 from Lexer.tokens import tokens
 
+run_flag = True
 pars = []
 errors = []
 def p_symbols(p):
@@ -318,12 +319,11 @@ def p_expression_Body(p):
         p[0] = p[1]
 def p_expression_Body_error(p):
     '''
-    Body : Procs error Proc
+    Body : Procs
          | error Procs
-         | Instructions
-         | Procs
+
     '''
-    error_message = "Syntax error: Body of the program does not include @Principal procedure"
+    error_message = "Syntax error at line "+str(p.lineno(1)+1)+": Body of the program does not include @Principal procedure"
     errors.append(error_message)
     print(error_message)
     raise SyntaxError
@@ -334,7 +334,10 @@ def p_empty(p):
     '''
     p[0] = None
 
-def readFile(dir):
+def readFile(dir, run):
+
+    if not run:
+        run_flag = False
     fp = codecs.open(dir, "r", "utf-8")
     cadena = fp.read()
     parser = yacc.yacc()
@@ -345,4 +348,5 @@ def readFile(dir):
 
 
 def clearpars():
+    errors.clear()
     pars.clear()
