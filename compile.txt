@@ -1,1 +1,1 @@
-PrintValues("Ga"), PrintValues("Gpool"), Stop
+New @var, (Num,5);

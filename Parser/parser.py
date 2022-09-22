@@ -4,6 +4,7 @@ import codecs
 import re
 from Lexer.tokens import tokens
 
+globales = []
 pars = []
 
 
@@ -28,8 +29,15 @@ def p_symbols(p):
            | Until
            | Case
            | Case_When
+           | Body
+           | Principal
+           | Proc
+           | Procs
+
     '''
     p[0] = p[1]
+
+start = 'Body'
 
 
 def p_expression_new(p):
@@ -243,17 +251,18 @@ def p_expression_whenConcatenated(p):
 
 def p_expression_instructions(p):
     '''
-    Instructions : New
-                 | Values
-                 | Alter
-                 | AlterB
-                 | Operator
-                 | MoveRight
-                 | MoveLeft
-                 | Hammer
-                 | IsTrue
-                 | Stop
-                 | PrintValues
+    Instructions : New SEMICOLON
+                 | Values SEMICOLON
+                 | Alter SEMICOLON
+                 | AlterB SEMICOLON
+                 | Operator SEMICOLON
+                 | MoveRight SEMICOLON
+                 | MoveLeft SEMICOLON
+                 | Hammer SEMICOLON
+                 | IsTrue SEMICOLON
+                 | Stop SEMICOLON
+                 | PrintValues SEMICOLON
+                 | Instructions Instructions
     '''
     p[0] = p[1]
 
@@ -282,7 +291,35 @@ def p_add_expression_printValues(p):
     p[0] = (p[1], p[3], p[5])
     print(p[0])
 
+def p_expression_Procs(p):
+    '''
+    Procs : Proc
+          | Proc Procs
+    '''
+def p_expression_Proc(p):
+    '''
+    Proc : PROC NAME LPAREN Instructions RPAREN SEMICOLON
+    '''
+    p[0] = (p[1], p[2], p[4])
 
+def p_expression_Principal(p):
+    '''
+    Principal : PRINCIPAL LPAREN Instructions RPAREN SEMICOLON
+    '''
+
+def p_expression_Body(p):
+    '''
+    Body : Procs Principal Procs
+         | Procs Principal
+         | Principal
+    '''
+
+    if len(p) == 4:
+        p[0] = (p[1], p[2], p[3])
+    elif len(p) == 3:
+        p[0] = (p[1], p[2])
+    elif len(p) == 2:
+        p[0] = p[1]
 def p_empty(p):
     '''
     empty :

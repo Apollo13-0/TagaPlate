@@ -106,7 +106,7 @@ def t_ccode_nonspace(t):
 
 t_NEW = "New"
 t_PROC = "Proc"
-# PRINCIPAL
+t_PRINCIPAL = "@Principal"
 t_CALL = "CALL"
 t_NUM = "Num"  # ver si se maneja enteros y/o floats
 t_BOOL = "Bool"
