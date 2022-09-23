@@ -147,10 +147,27 @@ def p_another_boolean(p):
 
 def p_expression_Alter(p):
     '''
-    Alter : ALTER LPAREN NAME COMMA Operator COMMA Num RPAREN
+    Alter : ALTER LPAREN NAME COMMA Operator COMMA Num RPAREN SEMICOLON
     '''
+
+    for item in pars:
+
+
+        if item[0] == p[3]:
+            if item[1] != 'Num':
+                error_message = "Syntax error in line " + str(p.lineno(3) + 1) + "Variable must be of type Num"
+                errors.append(error_message)
+                raise SyntaxError
+            elif p[5] == 'ADD':
+                item[2] += float(p[7])
+            elif p[5] == 'SUB':
+                item[2] -= float(p[7])
+            elif p[5] == 'MUL':
+                item[2] *= float(p[7])
+            elif p[5] == 'DIV':
+                item[2] /= float(p[7])
+
     p[0] = (p[1], p[3], p[5], p[7])
-    print(p[0])
 
 
 def p_expression_operator(p):
@@ -167,6 +184,14 @@ def p_expression_AlterB(p):
     '''
     AlterB : ALTERB LPAREN NAME RPAREN
     '''
+    for item in pars:
+        if item[0] == p[3]:
+            if item[1] != 'Bool':
+                error_message = "Syntax error in line " + str(p.lineno(3) + 1) + "Variable must be of type Bool"
+                errors.append(error_message)
+                raise SyntaxError
+            else:
+                item[2] = not(item[2])
     p[0] = (p[1], p[3])
 
 
