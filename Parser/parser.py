@@ -3,16 +3,11 @@ import os
 import codecs
 import re
 from Lexer.tokens import tokens
-import socket
 
 run_flag = True
 pars = []
 errors = []
 
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-def send(msg):
-    sock.sendall(b'msg')
 def p_symbols(p):
     '''
     symbol : New
@@ -50,10 +45,33 @@ def p_expression_new(p):
     New : NEW NAME COMMA LPAREN NUM COMMA Num RPAREN
         | NEW NAME COMMA LPAREN BOOL COMMA Bool RPAREN
     '''
-    #(identificador, tipo, valor)
-    p[0] = (p[2], p[5], p[7])
-    print(p[0])
+    #(new , identificador, tipo, valor)
+    p[0] = (p[1], p[2], p[5], p[7])
 
+def p_expression_new_error_noid(p):
+    '''
+    New : NEW COMMA LPAREN NUM COMMA Num RPAREN
+        | NEW COMMA LPAREN NUM COMMA Bool RPAREN
+    '''
+    error_message = "Syntax error at line"+str(p.lineno(2)+1) + "variable identifier missing"
+    errors.append(error_message)
+    raise SyntaxError
+def p_expression_new_error_no_value(p):
+    '''
+        New : NEW NAME COMMA LPAREN NUM COMMA RPAREN
+            | NEW NAME COMMA LPAREN BOOL COMMA RPAREN
+    '''
+    error_message = "Syntax error at line" + str(p.lineno(2) + 1) + "variable value missing"
+    errors.append(error_message)
+    raise SyntaxError
+def p_expression_new_error_wrong_value(p):
+    '''
+        New : NEW NAME COMMA LPAREN NUM Bool COMMA RPAREN
+            | NEW NAME COMMA LPAREN BOOL COMMA Num RPAREN
+    '''
+    error_message = "Syntax error at line" + str(p.lineno(2) + 1) + "variable value does not match type"
+    errors.append(error_message)
+    raise SyntaxError
 
 def p_expression_values(p):
     '''
@@ -61,17 +79,8 @@ def p_expression_values(p):
            | VALUES LPAREN NAME COMMA Bool RPAREN
            | VALUES LPAREN NAME COMMA ALTER RPAREN
     '''
-    for item in pars:
-        if item[0] == p[3]:
-            try:
-                item[2] = float(str(p[5]))
-                item[1] = 'Num'
-            except:
-                item[2] = p[5]
-                item[1] = 'Bool'
-
-
-
+    #values name, value
+    p[0] = (p[1], p[3], p[5])
 
 def p_expression_Num(p):
     '''
@@ -80,8 +89,6 @@ def p_expression_Num(p):
     '''
 
     p[0] = float(p[1])
-
-
 
 def p_expression_Plus(p):
     '''
@@ -119,8 +126,6 @@ def p_expression_boolean(p):
     else:
         p[0] = False
 
-
-
 def p_another_boolean(p):
     '''
     Bool : Num LT Num
@@ -142,31 +147,27 @@ def p_another_boolean(p):
          | NAME EQUAL NAME
          | NAME NOT_EQUAL NAME
     '''
-    p[0] = (p[1], p[2], p[3])
-
-
+    if isinstance(p[1], float) and isinstance(p[3], float):
+        if p[2] == '<':
+            p[0] = p[1] < p[3]
+        elif p[2] == '>':
+            p[0] = p[1] > p[3]
+        elif p[2] == '==':
+            p[0] = p[1] == p[3]
+        elif p[2] == '<=':
+            p[0] = p[1] <= p[3]
+        elif p[2] == '>=':
+            p[0] = p[1] >= p[3]
+        elif p[2] == '<>':
+            p[0] = p[1] != p[3]
+    else:
+        p[0] = ('comp', p[1], p[2], p[3])
 def p_expression_Alter(p):
     '''
     Alter : ALTER LPAREN NAME COMMA Operator COMMA Num RPAREN SEMICOLON
     '''
 
-    for item in pars:
-
-
-        if item[0] == p[3]:
-            if item[1] != 'Num':
-                error_message = "Syntax error in line " + str(p.lineno(3) + 1) + "Variable must be of type Num"
-                errors.append(error_message)
-                raise SyntaxError
-            elif p[5] == 'ADD':
-                item[2] += float(p[7])
-            elif p[5] == 'SUB':
-                item[2] -= float(p[7])
-            elif p[5] == 'MUL':
-                item[2] *= float(p[7])
-            elif p[5] == 'DIV':
-                item[2] /= float(p[7])
-
+    # alter, name, operator, num
     p[0] = (p[1], p[3], p[5], p[7])
 
 
@@ -184,14 +185,8 @@ def p_expression_AlterB(p):
     '''
     AlterB : ALTERB LPAREN NAME RPAREN
     '''
-    for item in pars:
-        if item[0] == p[3]:
-            if item[1] != 'Bool':
-                error_message = "Syntax error in line " + str(p.lineno(3) + 1) + "Variable must be of type Bool"
-                errors.append(error_message)
-                raise SyntaxError
-            else:
-                item[2] = not(item[2])
+
+    #alterb, name
     p[0] = (p[1], p[3])
 
 
@@ -201,35 +196,21 @@ def p_expression_moveR(p):
      MoveRight : MOVERIGHT
     '''
     p[0] = p[1]
-    send('a')
-
-
 
 def p_expression_moveL(p):
     '''
     MoveLeft : MOVELEFT
     '''
     p[0] = p[1]
-    send('b')
+
 
 
 def p_expression_hammer(p):
     '''
     Hammer : HAMMER LPAREN Position RPAREN
     '''
+    #hammer position
     p[0] = (p[1], p[3])
-
-    if p[3] == "N":
-        send('f')
-    elif p[3] == "S":
-        send('e')
-    elif p[3] == "E":
-        send('d')
-    elif p[3] == "O":
-        send('c')
-
-
-
 
 def p_expression_position(p):
     '''
@@ -252,16 +233,15 @@ def p_expression_isTrue(p):
     '''
     IsTrue : ISTRUE LPAREN NAME RPAREN
     '''
+    #istrue id
     p[0] = (p[1], p[3])
-    print(p[0])
-
 
 def p_expression_repeat(p):
     '''
     Repeat : REPEAT LPAREN Instructions BREAK RPAREN
     '''
+    # repeat
     p[0] = (p[1], p[3])
-    print(p[0])
 
 
 def p_expression_until(p):
@@ -269,7 +249,6 @@ def p_expression_until(p):
     Until : UNTIL LPAREN Instructions RPAREN Bool
     '''
     p[0] = (p[1], p[3], p[5])
-    print(p[0])
 
 
 def p_expression_while(p):
@@ -277,25 +256,29 @@ def p_expression_while(p):
     While : WHILE Bool LPAREN Instructions RPAREN
     '''
     p[0] = (p[1], p[2], p[4])
-    print(p[0])
 
 
 def p_expression_caseWhen(p):
     '''
-    Case_When : CASE WHEN LPAREN Bool RPAREN THEN LPAREN Instructions RPAREN LBRACKET ELSE LPAREN Instructions RPAREN RBRACKET
-         | CASE WHEN LPAREN Bool RPAREN THEN LPAREN Instructions RPAREN LBRACKET
+    Case_When : CASE WHEN LPAREN Bool RPAREN THEN LPAREN Instructions RPAREN LBRACKET
     '''
-    p[0] = (p[1], p[2], p[4], p[8], p[13])
-    print(p[0])
+
+    p[0] = (p[1]+p[2], p[4], p[8])
 
 
+def p_caseWhen_else(p):
+    '''
+    Case_When : CASE WHEN LPAREN Bool RPAREN THEN LPAREN Instructions RPAREN LBRACKET ELSE LPAREN Instructions RPAREN RBRACKET
+    '''
+    p[0] = (p[1] + p[2], p[4], p[8], p[13])
 def p_expression_case(p):
     '''
     Case : CASE NAME When
 
     '''
+
+    #case, id, when
     p[0] = (p[1], p[2], p[3])
-    print(p[0])
 
 
 def p_case_else(p):
@@ -312,7 +295,6 @@ def p_expression_whenValue(p):
 
     '''
     p[0] = (p[1], p[2], p[5])
-    print(p[0])
 
 def p_expression_instructions(p):
     '''
@@ -332,12 +314,6 @@ def p_expression_instructions(p):
     p[0] = p[1]
 
 
-def p_expresion_instructions_concatenation(p):
-    '''
-    Instructions  : Instructions COMMA Instructions
-    '''
-    p[0] = (p[2], p[1], p[3])
-
 
 def p_expression_printValues(p):
     '''
@@ -345,7 +321,6 @@ def p_expression_printValues(p):
                 | PRINTVALUES LPAREN STRING RPAREN
     '''
     p[0] = (p[1], p[3])
-    print(p[0])
 
 
 def p_add_expression_printValues(p):
@@ -354,18 +329,19 @@ def p_add_expression_printValues(p):
                 | PRINTVALUES LPAREN NAME COMMA STRING RPAREN
     '''
     p[0] = (p[1], p[3], p[5])
-    print(p[0])
 
 def p_expression_Procs(p):
     '''
     Procs : Proc
           | Proc Procs
     '''
+    p[0] = p[1]
 def p_expression_Proc(p):
     '''
     Proc : PROC NAME LPAREN Instructions RPAREN SEMICOLON
     '''
     p[0] = (p[1], p[2], p[4])
+
 def p_expression_Proc_error(p):
     '''
     Proc : PROC error LPAREN  Instructions RPAREN SEMICOLON
@@ -376,6 +352,7 @@ def p_expression_Principal(p):
     '''
     Principal : PRINCIPAL LPAREN Instructions RPAREN SEMICOLON
     '''
+    p[0] = (p[1], p[3])
 def p_expression_Principal_error(p):
     '''
     Principal : Principal error Instructions RPAREN SEMICOLON
@@ -419,20 +396,13 @@ def readFile(dir, run):
 
     if not run:
         run_flag = False
-    if run_flag:
-        try:
-            sock.connect(("1922.168.4.1", 8888))
-            print("Connected to the server")
-        except IOError:
-            print("Could not establish connection with Server")
-
     fp = codecs.open(dir, "r", "utf-8")
     cadena = fp.read()
     parser = yacc.yacc()
     fp.close()
     par = parser.parse(cadena)
     print(str(par))
-    return errors+pars
+    return [errors, pars]
 
 
 def clearpars():

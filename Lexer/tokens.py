@@ -91,9 +91,8 @@ def t_STRING(t):
 
 
 def t_error(t):
-    print("Illegal character '%s'" % t.value[0])
-    toks.append(str("Illegal character '%s'" % t.value[0]))
-    t.lexer.skip(1)
+    errors.append(str("Illegal input '%s'" % t.value))
+    t.lexer.skip(len(t.value))
 
 
 def t_comment(t):
@@ -195,4 +194,5 @@ def read_File(dir):
 
 
 def cleartoks():
+    errors.clear()
     toks.clear()

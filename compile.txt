@@ -1,4 +1,1 @@
-@Principal(
-New @var, (Num, 4);
-);
-
+salchicha
