@@ -61,8 +61,8 @@ def t_FLOAT(t):
     try:
         t.value = float(t.value)
     except ValueError:
-        print("Floaat value too large %d", t.value)
-        toks.append(str("Floaat value too large %d" + t.value))
+        print("Float value too large %d", t.value)
+        toks.append(str("Float value too large %d" + t.value))
         t.value = 0
     return t
 
@@ -82,6 +82,7 @@ def t_NAME(t):
     r'@[A-Za-z_][A-Za-z0-9_]*'
     t.type = "NAME"
     return t
+
 
 def t_STRING(t):
     r'"[A-Za-z_][A-Za-z0-9_]*"'

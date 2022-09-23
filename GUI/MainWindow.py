@@ -169,10 +169,14 @@ class IDE:
         pars = parser.readFile("compile.txt", False)
         print(pars)
         print(toks)
-        for par in pars:
-            self.outputBox.insert(END,(str(par) + "\n"))
-        for tok in toks:
-            self.outputBox.insert(END,(str(tok) + "\n"))
+
+        if (pars == []) and (toks == []):
+            self.outputBox.insert(END, "Program succesfully compiled")
+        else:
+            for par in pars:
+                self.outputBox.insert(END,(str(par) + "\n"))
+            for tok in toks:
+                self.outputBox.insert(END,(str(tok) + "\n"))
         self.outputBox.config(state=DISABLED)
         tokens.cleartoks()
         parser.clearpars()

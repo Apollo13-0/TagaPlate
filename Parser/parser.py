@@ -50,7 +50,8 @@ def p_expression_new(p):
     New : NEW NAME COMMA LPAREN NUM COMMA Num RPAREN
         | NEW NAME COMMA LPAREN BOOL COMMA Bool RPAREN
     '''
-    p[0] = (p[1], p[2], p[5], p[7])
+    #(identificador, tipo, valor)
+    p[0] = (p[2], p[5], p[7])
     print(p[0])
 
 
@@ -60,8 +61,16 @@ def p_expression_values(p):
            | VALUES LPAREN NAME COMMA Bool RPAREN
            | VALUES LPAREN NAME COMMA ALTER RPAREN
     '''
-    p[0] = (p[1], p[3], p[5])
-    print(p[0])
+    for item in pars:
+        if item[0] == p[3]:
+            try:
+                item[2] = float(str(p[5]))
+                item[1] = 'Num'
+            except:
+                item[2] = p[5]
+                item[1] = 'Bool'
+
+
 
 
 def p_expression_Num(p):
@@ -104,7 +113,12 @@ def p_expression_boolean(p):
     Bool : TRUE
          | FALSE
     '''
-    p[0] = p[1]
+
+    if p[1] == 'True':
+        p[0] = True
+    else:
+        p[0] = False
+
 
 
 def p_another_boolean(p):
@@ -337,6 +351,14 @@ def p_expression_Principal(p):
     '''
     Principal : PRINCIPAL LPAREN Instructions RPAREN SEMICOLON
     '''
+def p_expression_Principal_error(p):
+    '''
+    Principal : Principal error Instructions RPAREN SEMICOLON
+              | Principal LPAREN Instructions error SEMICOLON
+    '''
+    error_message = "Syntax error at line"+str(p.lineno(1)+1)+": Parenthesis needed"
+    errors.append(error_message)
+    print(error_message)
 
 def p_expression_Body(p):
     '''
@@ -353,7 +375,7 @@ def p_expression_Body(p):
         p[0] = p[1]
 def p_expression_Body_error(p):
     '''
-    Body : Procs
+    Body : Procs empty
          | error Procs
 
     '''
@@ -385,7 +407,7 @@ def readFile(dir, run):
     fp.close()
     par = parser.parse(cadena)
     print(str(par))
-    return errors
+    return errors+pars
 
 
 def clearpars():
