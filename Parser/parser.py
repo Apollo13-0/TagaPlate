@@ -3,6 +3,8 @@ import os
 import codecs
 import re
 from Lexer.tokens import tokens
+from AST_INS.AstClass import *
+
 
 run_flag = True
 pars = []
@@ -199,21 +201,23 @@ def p_expression_AlterB(p):
     AlterB : ALTERB LPAREN NAME RPAREN
     '''
     # alterb, name
-    p[0] = (p[1], p[3])
+    #p[0] = (p[1], p[3])
+    p[0] = AlterB(p[3])
 
 
 def p_expression_moveR(p):
     '''
      MoveRight : MOVERIGHT
     '''
-    p[0] = p[1]
+    p[0] = MoveRight()
 
 
 def p_expression_moveL(p):
     '''
     MoveLeft : MOVELEFT
     '''
-    p[0] = p[1]
+    #p[0] = p[1]
+    p[0] = MoveLeft()
 
 
 def p_expression_hammer(p):
@@ -221,7 +225,8 @@ def p_expression_hammer(p):
     Hammer : HAMMER LPAREN Position RPAREN
     '''
     # hammer position
-    p[0] = (p[1], p[3])
+    #p[0] = (p[1], p[3])
+    p[0] = Hammer(p[3])
 
 
 def p_expression_position(p):
@@ -254,7 +259,8 @@ def p_expression_repeat(p):
     Repeat : REPEAT LPAREN Instructions BREAK SEMICOLON RPAREN SEMICOLON
     '''
     # repeat
-    p[0] = (p[1], p[3])
+    #p[0] = (p[1], p[3])
+    p[0] = Repeat(p[3])
 
 
 def p_repea_error_nobreak(p):
@@ -287,7 +293,8 @@ def p_expression_while(p):
     '''
     While : WHILE Bool LPAREN Instructions RPAREN SEMICOLON
     '''
-    p[0] = (p[1], p[2], p[4])
+    #p[0] = (p[1], p[2], p[4])
+    p[0] = While(p[2], p[4])
 
 
 def p_exoression_while_error(p):
@@ -316,7 +323,8 @@ def p_expression_caseWhen(p):
     Case_When : CASE WHEN LPAREN Bool RPAREN THEN LPAREN Instructions RPAREN LBRACKET SEMICOLON
     '''
 
-    p[0] = (p[1] + p[2], p[4], p[8])
+    #p[0] = (p[1] + p[2], p[4], p[8])
+    p[0] = CaseWhen(p[4], p[8])
 
 
 def p_caseWhen_else(p):
@@ -333,7 +341,8 @@ def p_expression_case(p):
     '''
 
     # case, id, when
-    p[0] = (p[1], p[2], p[3])
+    #p[0] = (p[1], p[2], p[3])
+    p[0] = Case(p[2], p[3])
 
 
 def p_case_else(p):
@@ -399,17 +408,17 @@ def p_expression_printValues(p):
     '''
     PrintValues : PRINTVALUES LPAREN NAME RPAREN
                 | PRINTVALUES LPAREN STRING RPAREN
+                | PRINTVALUES LPAREN String RPAREN
+    '''
+    #p[0] = (p[1], p[3])
+    p[0] = PrintValues(p[3])
+
+def p_toString(p):
+    '''
+    String : STRING COMMA NAME
+            | NAME COMMA STRING
     '''
     p[0] = (p[1], p[3])
-
-
-def p_add_expression_printValues(p):
-    '''
-    PrintValues : PRINTVALUES LPAREN STRING COMMA NAME RPAREN
-                | PRINTVALUES LPAREN NAME COMMA STRING RPAREN
-    '''
-    p[0] = (p[1], p[3], p[5])
-
 
 def p_expression_Procs(p):
     '''
@@ -426,7 +435,8 @@ def p_expression_Proc(p):
     '''
     Proc : PROC NAME LPAREN Instructions RPAREN SEMICOLON
     '''
-    p[0] = (p[1], p[2], p[4])
+    #p[0] = (p[1], p[2], p[4])
+    p[0] = Procs(p[2], p[4])
 
 
 def p_expression_Proc_error(p):
@@ -443,7 +453,8 @@ def p_expression_Principal(p):
     '''
     Principal : PRINCIPAL LPAREN Instructions RPAREN SEMICOLON
     '''
-    p[0] = (p[1], p[3])
+    #p[0] = (p[1], p[3])
+    p[0] = Principal(p[3])
 
 
 def p_expression_Principal_error(p):
@@ -504,7 +515,15 @@ def readFile(dir, run):
     print(str(par))
     print(pars)
     return errors
-
+def parse_dir(dir):
+    fp = codecs.open(dir, "r", "utf-8")
+    cadena = fp.read()
+    parser = yacc.yacc()
+    fp.close()
+    par = parser.parse(cadena)
+    print(str(par))
+    print(pars)
+    return par
 
 def clearpars():
     errors.clear()

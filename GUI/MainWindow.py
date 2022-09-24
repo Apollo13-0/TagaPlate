@@ -3,6 +3,8 @@ from tkinter import filedialog
 from Lexer import tokens
 from Parser import parser
 import HWTEST.HWtestWindow as HWTest
+from AST_INS import ProcessorAst
+from AST_INS import AstClass
 class IDE:
 
     def __init__(self):
@@ -171,6 +173,7 @@ class IDE:
         file.close()
         toks = tokens.read_File("compile.txt")
         pars = parser.readFile("compile.txt", False)
+        ProcessorAst.compile_e("compile.txt")
 
         if (len(pars) == 0) and (len(toks) == 0):
             self.outputBox.insert(END, "Program succesfully compiled")
