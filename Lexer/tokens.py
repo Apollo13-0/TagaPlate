@@ -4,13 +4,17 @@ import codecs
 # list of tokens names
 toks = []
 errors = []
+
+reserved = {
+    '@Principal' : 'PRINCIPAL'
+}
 tokens = [
     "NAME",
     "INT", "FLOAT","STRING",
 
     # Reserved words
     "NEW",
-    "PROC", "PRINCIPAL",
+    "PROC",
     "CALL", "NUM", "BOOL",
     "VALUES",
     "ALTER", "ADD", "SUB", "MUL", "DIV",
@@ -19,15 +23,11 @@ tokens = [
     "ISTRUE",
     "REPEAT", "BREAK",
     "UNTIL", "WHILE",
-    "CASE", "WHEN", "ELSE", "CASE_WHEN", "THEN",
+    "CASE", "WHEN", "ELSE", "THEN",
     "PRINTVALUES",
     "TRUE",
     "FALSE",
-    "OPERATOR",
     "N", "S", "E", "O",
-    "POSITION",
-    "INSTRUCTIONS",
-    "CONCATENATION",
 
     # Operators
     "PLUS",
@@ -40,18 +40,14 @@ tokens = [
     # <, <=,  >, >=, ==, <>
     'LT', 'LE', 'GT', 'GE', "EQUAL", "NOT_EQUAL",
 
-    # Assigment =
-    "ASSING",
-
     # Bracket ( ) { } , . ; : [ ]
 
     "LPAREN", "RPAREN",
-    "LBRACE", "RBRACE",
-    "COMMA", "DOT",
-    "SEMICOLON", "COLON",
+    "COMMA",
+    "SEMICOLON",
     "LBRACKET", "RBRACKET"
 
-]
+] + list(reserved.values())
 
 
 # Regular expression rules for simple tokens
@@ -80,7 +76,7 @@ def t_INT(t):
 
 def t_NAME(t):
     r'@[A-Za-z_][A-Za-z0-9_]*'
-    t.type = "NAME"
+    t.type = reserved.get(t.value, 'NAME')
     return t
 
 
@@ -107,7 +103,6 @@ def t_ccode_nonspace(t):
 
 t_NEW = "New"
 t_PROC = "Proc"
-t_PRINCIPAL = "@Principal"
 t_CALL = "CALL"
 t_NUM = "Num"  # ver si se maneja enteros y/o floats
 t_BOOL = "Bool"
@@ -130,19 +125,15 @@ t_WHILE = "While"
 t_CASE = "Case"
 t_WHEN = "When"
 t_THEN = "Then"
-t_CASE_WHEN = "Case_When"
 t_ELSE = "Else"
 t_PRINTVALUES = "PrintValues"
 t_FALSE = "False"
 t_TRUE = "True"
-t_OPERATOR = "Operator"
 t_N = "N"
 t_S = "S"
 t_O = "O"
 t_E = "E"
-t_POSITION = "Position"
-t_INSTRUCTIONS = "Instructions"
-t_CONCATENATION = "Concatenation"
+
 
 
 # Operators
@@ -160,18 +151,11 @@ t_GE = r'>='
 t_EQUAL = r'=='
 t_NOT_EQUAL = r'<>'
 
-# Assigment
-t_ASSING = r'='
-
 # Bracket
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
-t_LBRACE = r"\{"
-t_RBRACE = r"\}"
 t_COMMA = r"\,"
-t_DOT = r"\."
 t_SEMICOLON = r"\;"
-t_COLON = r"\:"
 t_LBRACKET = r"\["
 t_RBRACKET = r"\]"
 

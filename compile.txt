@@ -1,1 +1,49 @@
-salchicha
+@Principal(
+New @var1, (Num,3);
+New @var2, (Bool, False);
+Alter(@var1, ADD, 3);
+IsTrue(@Var90);
+);
+
+Proc @pep (
+New @var3, (Num, 5);
+New @var4, (Num, 3);
+Values(@var1, Alter(@vaca, ADD, 4));
+Hammer(N);
+-- inicializa la variable en 1
+Values (@variable1, 1);
+Until
+ ( MoveLeft;
+ MoveRight;
+-- Aumenta en 1 a la variable
+ Values (@variable1,
+ Alter (@variable1,ADD, 1));
+ )
+ @variable1 > 17;
+);
+
+Proc @pep3 (
+New @var5, (Num, 5);
+New @var6, (Num, 9);
+AlterB(@var9);
+MoveRight;
+Repeat(
+New @var3, (Num, 5);
+New @var4, (Num, 3);
+Values(@var1, Alter(@vaca, ADD, 4));
+Hammer(N);
+Break;
+);
+
+);
+
+
+
+
+
+
+
+
+
+
+

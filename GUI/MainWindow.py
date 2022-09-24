@@ -167,10 +167,8 @@ class IDE:
         file.close()
         toks = tokens.read_File("compile.txt")
         pars = parser.readFile("compile.txt", False)
-        print(pars)
-        print(toks)
 
-        if (pars == []) and (toks == []):
+        if (len(pars) == 0) and (len(toks) == 0):
             self.outputBox.insert(END, "Program succesfully compiled")
         else:
             for par in pars:

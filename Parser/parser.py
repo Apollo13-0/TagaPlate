@@ -33,6 +33,8 @@ def p_symbols(p):
            | Principal
            | Proc
            | Procs
+           | ControlStructure
+           | Sentences
 
     '''
     p[0] = p[1]
@@ -66,7 +68,7 @@ def p_expression_new_error_no_value(p):
     raise SyntaxError
 def p_expression_new_error_wrong_value(p):
     '''
-        New : NEW NAME COMMA LPAREN NUM Bool COMMA RPAREN
+        New : NEW NAME COMMA LPAREN NUM  COMMA Bool RPAREN
             | NEW NAME COMMA LPAREN BOOL COMMA Num RPAREN
     '''
     error_message = "Syntax error at line" + str(p.lineno(2) + 1) + "variable value does not match type"
@@ -77,7 +79,7 @@ def p_expression_values(p):
     '''
     Values : VALUES LPAREN NAME COMMA Num RPAREN
            | VALUES LPAREN NAME COMMA Bool RPAREN
-           | VALUES LPAREN NAME COMMA ALTER RPAREN
+           | VALUES LPAREN NAME COMMA Alter RPAREN
     '''
     #values name, value
     p[0] = (p[1], p[3], p[5])
@@ -164,7 +166,7 @@ def p_another_boolean(p):
         p[0] = ('comp', p[1], p[2], p[3])
 def p_expression_Alter(p):
     '''
-    Alter : ALTER LPAREN NAME COMMA Operator COMMA Num RPAREN SEMICOLON
+    Alter : ALTER LPAREN NAME COMMA Operator COMMA Num RPAREN
     '''
 
     # alter, name, operator, num
@@ -224,7 +226,7 @@ def p_expression_position(p):
 
 def p_expression_stop(p):
     '''
-    Stop : STOP
+    Stop : STOP SEMICOLON
     '''
     p[0] = p[1]
 
@@ -238,29 +240,42 @@ def p_expression_isTrue(p):
 
 def p_expression_repeat(p):
     '''
-    Repeat : REPEAT LPAREN Instructions BREAK RPAREN
+    Repeat : REPEAT LPAREN Instructions BREAK SEMICOLON RPAREN SEMICOLON
     '''
     # repeat
     p[0] = (p[1], p[3])
 
-
+def p_repea_error_nobreak(p):
+    '''
+    Repeat : REPEAT LPAREN Instructions RPAREN SEMICOLON
+    '''
+    error_msg = "Syntax error on line "+str(p.lineno(4))+" : Break not found in Repeat structure"
+    errors.append(error_msg)
+    raise SyntaxError
 def p_expression_until(p):
     '''
-    Until : UNTIL LPAREN Instructions RPAREN Bool
+    Until : UNTIL LPAREN Instructions RPAREN Bool SEMICOLON
     '''
     p[0] = (p[1], p[3], p[5])
 
-
+def p_until_error_nocond(p):
+    '''
+        Until : UNTIL LPAREN Instructions RPAREN
+              | UNTIL LPAREN Instructions RPAREN  SEMICOLON
+    '''
+    error_msg = "Syntax error on line " + str(p.lineno(4)) + " : No condition at the end of Until structure"
+    errors.append(error_msg)
+    raise SyntaxError
 def p_expression_while(p):
     '''
-    While : WHILE Bool LPAREN Instructions RPAREN
+    While : WHILE Bool LPAREN Instructions RPAREN SEMICOLON
     '''
     p[0] = (p[1], p[2], p[4])
 
 
 def p_expression_caseWhen(p):
     '''
-    Case_When : CASE WHEN LPAREN Bool RPAREN THEN LPAREN Instructions RPAREN LBRACKET
+    Case_When : CASE WHEN LPAREN Bool RPAREN THEN LPAREN Instructions RPAREN LBRACKET SEMICOLON
     '''
 
     p[0] = (p[1]+p[2], p[4], p[8])
@@ -268,12 +283,12 @@ def p_expression_caseWhen(p):
 
 def p_caseWhen_else(p):
     '''
-    Case_When : CASE WHEN LPAREN Bool RPAREN THEN LPAREN Instructions RPAREN LBRACKET ELSE LPAREN Instructions RPAREN RBRACKET
+    Case_When : CASE WHEN LPAREN Bool RPAREN THEN LPAREN Instructions RPAREN LBRACKET ELSE LPAREN Instructions RPAREN RBRACKET SEMICOLON
     '''
     p[0] = (p[1] + p[2], p[4], p[8], p[13])
 def p_expression_case(p):
     '''
-    Case : CASE NAME When
+    Case : CASE NAME When SEMICOLON
 
     '''
 
@@ -283,7 +298,7 @@ def p_expression_case(p):
 
 def p_case_else(p):
     '''
-    Case : CASE NAME When ELSE LPAREN Instructions RPAREN
+    Case : CASE NAME When ELSE LPAREN Instructions RPAREN SEMICOLON
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[6])
 
@@ -296,9 +311,9 @@ def p_expression_whenValue(p):
     '''
     p[0] = (p[1], p[2], p[5])
 
-def p_expression_instructions(p):
+def p_expression_sentences(p):
     '''
-    Instructions : New SEMICOLON
+    Sentences : New SEMICOLON
                  | Values SEMICOLON
                  | Alter SEMICOLON
                  | AlterB SEMICOLON
@@ -309,11 +324,32 @@ def p_expression_instructions(p):
                  | IsTrue SEMICOLON
                  | Stop SEMICOLON
                  | PrintValues SEMICOLON
-                 | Instructions Instructions
     '''
     p[0] = p[1]
 
+def p_controlstructures(p):
+    '''
+    ControlStructure : When
+                     | Case
+                     | While
+                     | Case_When
+                     | Until
+                     | Repeat
+    '''
 
+    p[0] = p[1]
+
+def p_instructions(p):
+    '''
+    Instructions : ControlStructure
+                 | Sentences
+                 | Instructions Instructions
+    '''
+
+    if len(p) == 2:
+        p[0] = p[1]
+    elif len(p) == 3:
+        p[0] = ('Instructions', p[1], p[2])
 
 def p_expression_printValues(p):
     '''
@@ -335,7 +371,11 @@ def p_expression_Procs(p):
     Procs : Proc
           | Proc Procs
     '''
-    p[0] = p[1]
+    if len(p) == 2:
+        p[0] = p[1]
+    elif len(p) == 3:
+        p[0] = (p[1], p[2])
+
 def p_expression_Proc(p):
     '''
     Proc : PROC NAME LPAREN Instructions RPAREN SEMICOLON
@@ -344,9 +384,12 @@ def p_expression_Proc(p):
 
 def p_expression_Proc_error(p):
     '''
-    Proc : PROC error LPAREN  Instructions RPAREN SEMICOLON
+    Proc : PROC  LPAREN  Instructions RPAREN SEMICOLON
     '''
-    print("Syntax error: Procedure does not include an identifier")
+    error_message = "Syntax error at line:" +str(p.lineno(2))+" Procedure does not include an identifier"
+    errors.append(error_message)
+    print(error_message)
+    raise SyntaxError
 
 def p_expression_Principal(p):
     '''
@@ -355,8 +398,8 @@ def p_expression_Principal(p):
     p[0] = (p[1], p[3])
 def p_expression_Principal_error(p):
     '''
-    Principal : Principal error Instructions RPAREN SEMICOLON
-              | Principal LPAREN Instructions error SEMICOLON
+    Principal : PRINCIPAL error Instructions RPAREN SEMICOLON
+              | PRINCIPAL LPAREN Instructions SEMICOLON
     '''
     error_message = "Syntax error at line"+str(p.lineno(1)+1)+": Parenthesis needed"
     errors.append(error_message)
@@ -366,6 +409,7 @@ def p_expression_Body(p):
     '''
     Body : Procs Principal Procs
          | Procs Principal
+         | Principal Procs
          | Principal
     '''
 
@@ -377,13 +421,10 @@ def p_expression_Body(p):
         p[0] = p[1]
 def p_expression_Body_error(p):
     '''
-    Body : Procs empty
-         | error Procs
-
+    Body : Procs
     '''
     error_message = "Syntax error at line "+str(p.lineno(1)+1)+": Body of the program does not include @Principal procedure"
     errors.append(error_message)
-    print(error_message)
     raise SyntaxError
 
 def p_empty(p):
@@ -402,8 +443,8 @@ def readFile(dir, run):
     fp.close()
     par = parser.parse(cadena)
     print(str(par))
-    return [errors, pars]
-
+    print(pars)
+    return errors
 
 def clearpars():
     errors.clear()
