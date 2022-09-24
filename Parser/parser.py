@@ -37,6 +37,7 @@ def p_symbols(p):
            | ControlStructure
            | Sentences
            | Bool_operator
+           | empty
 
     '''
     p[0] = p[1]
