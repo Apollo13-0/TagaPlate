@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import filedialog
 from Lexer import tokens
 from Parser import parser
-
+import HWTEST.HWtestWindow as HWTest
 class IDE:
 
     def __init__(self):
@@ -52,7 +52,11 @@ class IDE:
 
         menuBar.add_command(label="Compilar", command=self.compile)
         menuBar.add_command(label="Ejecutar", command=self.runCompile)
+        menuBar.add_command(label="Probar Hardware", command=self.openhwtesting)
 
+    def openhwtesting(self):
+        testing = HWTest.HWtest()
+        testing.startTesting()
     def codeEntry(self):
 
         # Entry box for the code
