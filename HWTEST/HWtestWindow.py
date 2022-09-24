@@ -1,5 +1,7 @@
+import tkinter.simpledialog
 from tkinter import *
 import socket
+from tkinter import messagebox as mb
 
 
 class HWtest:
@@ -10,8 +12,9 @@ class HWtest:
         self.testWindow.resizable(False, False)
         self.testWindow.title("Hardware testing")
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.connect("192.168.4.1", 8888)
+        self.sock.settimeout(2)
 
+    def add_buttons(self):
         self.frame = Frame(self.testWindow)
         self.frame.pack()
 
@@ -53,5 +56,14 @@ class HWtest:
 
     def turnL(self):
         self.sock.send(b'b')
+
     def startTesting(self):
-        self.testWindow.mainloop()
+        try:
+            self.connect("192.168.4.1", 8888)
+            self.add_buttons()
+            self.testWindow.mainloop()
+        finally:
+            if mb.askyesno('Error', 'Error connecting to HW, Retry?'):
+                self.startTesting()
+            else:
+                self.testWindow.destroy()

@@ -3,6 +3,13 @@ New @var1, (Num,3);
 New @var2, (Bool, False);
 Alter(@var1, ADD, 3);
 IsTrue(@Var90);
+While @variable1 > 10
+ ( MoveLeft;
+ MoveRight;
+-- Resta 10 de variable
+ Values (@variable1,
+ Alter (@variable1,SUB, 10));
+ );
 );
 
 Proc @pep (
@@ -36,7 +43,6 @@ Break;
 );
 
 );
-
 
 
 

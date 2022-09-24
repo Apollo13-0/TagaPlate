@@ -35,6 +35,7 @@ def p_symbols(p):
            | Procs
            | ControlStructure
            | Sentences
+           | Bool_operator
 
     '''
     p[0] = p[1]
@@ -127,27 +128,21 @@ def p_expression_boolean(p):
         p[0] = True
     else:
         p[0] = False
-
+def p_booleanoperator(p):
+    '''
+    Bool_operator : LT
+                  | GT
+                  | LE
+                  | GE
+                  | EQUAL
+                  | NOT_EQUAL
+    '''
+    p[0] = p[1]
 def p_another_boolean(p):
     '''
-    Bool : Num LT Num
-         | Num GT Num
-         | Num LE Num
-         | Num GE Num
-         | Num EQUAL Num
-         | Num NOT_EQUAL Num
-         | NAME LT Num
-         | NAME GT Num
-         | NAME LE Num
-         | NAME GE Num
-         | NAME EQUAL Num
-         | NAME NOT_EQUAL Num
-         | NAME LT NAME
-         | NAME GT NAME
-         | NAME LE NAME
-         | NAME GE NAME
-         | NAME EQUAL NAME
-         | NAME NOT_EQUAL NAME
+    Bool : Num Bool_operator Num
+         | NAME Bool_operator Num
+         | NAME Bool_operator NAME
     '''
     if isinstance(p[1], float) and isinstance(p[3], float):
         if p[2] == '<':
@@ -163,7 +158,7 @@ def p_another_boolean(p):
         elif p[2] == '<>':
             p[0] = p[1] != p[3]
     else:
-        p[0] = ('comp', p[1], p[2], p[3])
+        p[0] = (p[1], p[2], p[3])
 def p_expression_Alter(p):
     '''
     Alter : ALTER LPAREN NAME COMMA Operator COMMA Num RPAREN
@@ -187,12 +182,8 @@ def p_expression_AlterB(p):
     '''
     AlterB : ALTERB LPAREN NAME RPAREN
     '''
-
     #alterb, name
     p[0] = (p[1], p[3])
-
-
-
 def p_expression_moveR(p):
     '''
      MoveRight : MOVERIGHT
@@ -272,7 +263,25 @@ def p_expression_while(p):
     '''
     p[0] = (p[1], p[2], p[4])
 
-
+def p_exoression_while_error(p):
+    '''
+    While : WHILE LPAREN Instructions RPAREN
+          | WHILE LPAREN Instructions RPAREN SEMICOLON
+          | WHILE LPAREN Num Instructions RPAREN
+          | WHILE LPAREN NAME Instructions RPAREN
+          | WHILE LPAREN NAME Instructions RPAREN SEMICOLON
+          | WHILE Bool_operator Name Instructions
+          | WHILE Bool_operator Name Instructions SEMICOLON
+          | WHILE Bool_operator Num Instructions
+          | WHILE Bool_operator Num Instructions SEMICOLON
+          | WHILE Name Bool_operator  Instructions
+          | WHILE Name  Bool_operator Instructions SEMICOLON
+          | WHILE Num Bool_operator Instructions
+          | WHILE Num Bool_operator Instructions SEMICOLON
+    '''
+    error_message = "Syntax error at line " +str(p.lineno(1)) + "Condition not found in While and/or no semicolon"
+    errors.append(error_message)
+    raise SyntaxError
 def p_expression_caseWhen(p):
     '''
     Case_When : CASE WHEN LPAREN Bool RPAREN THEN LPAREN Instructions RPAREN LBRACKET SEMICOLON
