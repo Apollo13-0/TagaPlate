@@ -54,8 +54,8 @@ def p_expression_new(p):
         | NEW NAME COMMA LPAREN BOOL COMMA Bool RPAREN
     '''
     # (new , identificador, tipo, valor)
-    p[0] = (p[1], p[2], p[5], p[7])
-
+    #p[0] = (p[1], p[2], p[5], p[7])
+    p[0] = New(p[2], p[5], p[7])
 
 def p_expression_new_error_noid(p):
     '''
@@ -94,7 +94,8 @@ def p_expression_values(p):
            | VALUES LPAREN NAME COMMA Alter RPAREN
     '''
     # values name, value
-    p[0] = (p[1], p[3], p[5])
+    #p[0] = (p[1], p[3], p[5])
+    p[0] = Values(p[3], p[5])
 
 
 def p_expression_Num(p):
@@ -183,8 +184,8 @@ def p_expression_Alter(p):
     '''
 
     # alter, name, operator, num
-    p[0] = (p[1], p[3], p[5], p[7])
-
+    #p[0] = (p[1], p[3], p[5], p[7])
+    p[0] = Alter(p[3], p[5], p[7])
 
 def p_expression_operator(p):
     '''
@@ -243,7 +244,7 @@ def p_expression_stop(p):
     '''
     Stop : STOP SEMICOLON
     '''
-    p[0] = p[1]
+    p[0] = Stop()
 
 
 def p_expression_isTrue(p):
@@ -251,7 +252,8 @@ def p_expression_isTrue(p):
     IsTrue : ISTRUE LPAREN NAME RPAREN
     '''
     # istrue id
-    p[0] = (p[1], p[3])
+    #p[0] = (p[1], p[3])
+    p[0] = IsTrue(p[3])
 
 
 def p_expression_repeat(p):
@@ -276,8 +278,8 @@ def p_expression_until(p):
     '''
     Until : UNTIL LPAREN Instructions RPAREN Bool SEMICOLON
     '''
-    p[0] = (p[1], p[3], p[5])
-
+    #p[0] = (p[1], p[3], p[5])
+    p[0] = Until(p[3], p[5])
 
 def p_until_error_nocond(p):
     '''
@@ -358,7 +360,8 @@ def p_expression_whenValue(p):
         | WHEN Bool THEN LPAREN Instructions RPAREN SEMICOLON
 
     '''
-    p[0] = (p[1], p[2], p[5])
+    #p[0] = (p[1], p[2], p[5])
+    p[0] = WhenValue(p[2], p[5])
 
 
 def p_expression_sentences(p):
